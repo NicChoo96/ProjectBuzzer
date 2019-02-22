@@ -7,6 +7,7 @@ from arduinoTools import findArduino, getButtonStatus
 from playsound import playsound
 from configuration import *
 from tkinter import *
+from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
 
 
@@ -144,6 +145,7 @@ def winFunc():
     
     #Add points and update scoreboard
     updateScoreBoard(1)
+    flashLabel(scoreConfig[currentPlayer], "green", True, 6, 150)
 
     #Display correct animation
     #resultPanel.configure(image=correctImage)
@@ -163,6 +165,8 @@ def loseFunc():
     
     #Deducts points and update scoreboard
     updateScoreBoard(-1)
+    flashLabel(scoreConfig[currentPlayer], "red", True, 4, 300)
+
 
     #Display Wrong Animation
     #resultPanel.configure(image=wrongImage)
@@ -273,11 +277,11 @@ def checkButtonNotPressedBefore(buttonNumb):
 #-------------------------------------------------------------------------
 #Create Scoreboard
 def createScoreBoard():
-    global numberOfPlayers
-    global root
+    #global numberOfPlayers
+    #global root
     global scoreDisplay
-    global backgroundColor
-    global fontColor
+    #global backgroundColor
+    #global fontColor
     global scoreConfig
     for x in range(numberOfPlayers):
         display = StringVar()
@@ -295,6 +299,26 @@ def updateScoreBoard(points):
     scoreList[currentPlayer] += points
     scoreDisplay[currentPlayer].set(
         str(listOfNum[currentPlayer]) + "\n" + str(scoreList[currentPlayer]))
+def flashLabel(flashingLabel, color, isSelected, times, delay):
+    print("test")
+    if getLabelColor(flashingLabel) == backgroundColor:
+        setLabelColor(flashingLabel, color)
+    else:
+        setLabelColor(flashingLabel, backgroundColor)
+    times = times - 1
+    if times >= 0:
+        flashingLabel.after(delay, flashLabel, flashingLabel, color, isSelected, times, delay)
+    else:
+        if isSelected:
+            setLabelColor(flashingLabel, color)
+        else:
+            setLabelColor(flashingLabel, backgroundColor)
+
+#get set label color
+def getLabelColor(labelName):
+    return labelName.cget('bg')
+def setLabelColor(labelName, color):
+    labelName.config(bg=color)
     
 #-------------------------------------------------------------------------
 def main():
@@ -323,7 +347,7 @@ def main():
         #Set current player to press button
         currentPlayer = int(buttonNumb) - 1
         #Highlight the player who press the button
-        scoreConfig[currentPlayer].config(bg=selectedColor)
+        flashLabel(scoreConfig[currentPlayer], selectedColor, True, 5, 200)
         #Set display to name
         setText(currentName)
         #Enable win lose buttons
@@ -344,6 +368,9 @@ root["bg"] = backgroundColor
 createScoreBoard()
 root.title(displayTitle)
 root.geometry(displayWindowSize) #Size of window
+ttk.Style().configure('TFrame', background=backgroundColor)
+backgroundFrame = ttk.Frame(root)
+backgroundFrame.pack(fill="both", expand=True)
 #Import all images
 correctImage = PhotoImage(file="image/Tick.png")
 correctImage = correctImage.zoom(imageSize)
