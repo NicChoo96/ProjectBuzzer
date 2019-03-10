@@ -9,11 +9,23 @@ from configuration import *
 from tkinter import *
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
+#-------------------------------------------------------------------------
+#Button Mapping
+buttonOneMap = 'f2'
+buttonTwoMap = 'f3'
+buttonThreeMap = 'f4'
+buttonFourMap = 'f5'
+buttonFiveMap = 'f6'
+buttonSixMap = 'f7'
+buttonSevenMap = 'f8'
+buttonEightMap = 'f9'
 
 
 #-------------------------------------------------------------------------
 
 #Private logic variables
+fontSize = 30
+labelWidth = 4
 pressedButtonLogger = []
 listOfNum = ["1","2","3", "4", "5", "6", "7", "8"]
 scoreList = [0,0,0,0,0,0,0,0]
@@ -233,35 +245,35 @@ def debugKeyInputs():
             quit()
         else:
             pass
-        if keyboard.is_pressed('z'): #reset button pressed
+        if keyboard.is_pressed(buttonOneMap): #reset button pressed
             buttonNumb = "1"
         else:
             pass
-        if keyboard.is_pressed('x'): #reset button pressed
+        if keyboard.is_pressed(buttonTwoMap): #reset button pressed
             buttonNumb = "2"
         else:
             pass
-        if keyboard.is_pressed('c'): #reset button pressed
+        if keyboard.is_pressed(buttonThreeMap): #reset button pressed
             buttonNumb = "3"
         else:
             pass
-        if keyboard.is_pressed('v'): #reset button pressed
+        if keyboard.is_pressed(buttonFourMap): #reset button pressed
             buttonNumb = "4"
         else:
             pass
-        if keyboard.is_pressed('b'): #reset button pressed
+        if keyboard.is_pressed(buttonFiveMap): #reset button pressed
             buttonNumb = "5"
         else:
             pass
-        if keyboard.is_pressed('n'): #reset button pressed
+        if keyboard.is_pressed(buttonSixMap): #reset button pressed
             buttonNumb = "6"
         else:
             pass
-        if keyboard.is_pressed('m'): #reset button pressed
+        if keyboard.is_pressed(buttonSevenMap): #reset button pressed
             buttonNumb = "7"
         else:
             pass
-        if keyboard.is_pressed(','): #reset button pressed
+        if keyboard.is_pressed(buttonEightMap): #reset button pressed
             buttonNumb = "8"
         else:
             pass
@@ -287,7 +299,7 @@ def createScoreBoard():
         display = StringVar()
         scoreDisplay.append(display)
         s_config = Label(root, textvariable=scoreDisplay[x],
-                      width=5, bg=backgroundColor, fg=fontColor, font=("Arial", 35))
+                      width=labelWidth, bg=backgroundColor, fg=fontColor, font=("Arial", fontSize))
         s_config.pack(side=LEFT)
         scoreConfig.append(s_config)
         scoreDisplay[x].set(str(x+1) + "\n" + str(scoreList[x]))
@@ -296,11 +308,12 @@ def updateScoreBoard(points):
     global currentPlayer
     global scoreList
     global scoreDisplay
-    scoreList[currentPlayer] += points
-    scoreDisplay[currentPlayer].set(
+    if not (points < 0 and scoreList[currentPlayer] == 0):
+        scoreList[currentPlayer] += points
+        scoreDisplay[currentPlayer].set(
         str(listOfNum[currentPlayer]) + "\n" + str(scoreList[currentPlayer]))
+
 def flashLabel(flashingLabel, color, isSelected, times, delay):
-    print("test")
     if getLabelColor(flashingLabel) == backgroundColor:
         setLabelColor(flashingLabel, color)
     else:
@@ -368,9 +381,9 @@ root["bg"] = backgroundColor
 createScoreBoard()
 root.title(displayTitle)
 root.geometry(displayWindowSize) #Size of window
-ttk.Style().configure('TFrame', background=backgroundColor)
-backgroundFrame = ttk.Frame(root)
-backgroundFrame.pack(fill="both", expand=True)
+#ttk.Style().configure('TFrame', background=backgroundColor)
+#backgroundFrame = ttk.Frame(root)
+#backgroundFrame.pack(fill="both", expand=True)
 #Import all images
 correctImage = PhotoImage(file="image/Tick.png")
 correctImage = correctImage.zoom(imageSize)
