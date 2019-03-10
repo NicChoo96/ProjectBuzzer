@@ -100,43 +100,55 @@ void loop() {
         digitalWrite(outPin2, LOW);
         digitalWrite(outPin3, LOW);
         digitalWrite(outPin4, HIGH);
+        break;
       case 'b':
         digitalWrite(outPin1, LOW);
         digitalWrite(outPin2, LOW);
         digitalWrite(outPin3, HIGH);
         digitalWrite(outPin4, HIGH);
+        break;
       case 'c':
         digitalWrite(outPin1, LOW);
         digitalWrite(outPin2, HIGH);
         digitalWrite(outPin3, LOW);
         digitalWrite(outPin4, HIGH);
+        break;
       case 'd':
         digitalWrite(outPin1, LOW);
         digitalWrite(outPin2, HIGH);
         digitalWrite(outPin3, HIGH);
         digitalWrite(outPin4, HIGH);
+        break;
       case 'e':
         digitalWrite(outPin1, HIGH);
         digitalWrite(outPin2, LOW);
         digitalWrite(outPin3, LOW);
         digitalWrite(outPin4, HIGH);
+        break;
       case 'f':
         digitalWrite(outPin1, HIGH);
         digitalWrite(outPin2, LOW);
         digitalWrite(outPin3, HIGH);
         digitalWrite(outPin4, HIGH);
+        break;
       case 'g':
         digitalWrite(outPin1, HIGH);
         digitalWrite(outPin2, HIGH);
         digitalWrite(outPin3, LOW);
         digitalWrite(outPin4, HIGH);
+        break;
       case 'h':
         digitalWrite(outPin1, HIGH);
         digitalWrite(outPin2, HIGH);
         digitalWrite(outPin3, HIGH);
         digitalWrite(outPin4, HIGH);
+        break;
       case 'i':
+        digitalWrite(outPin1, LOW);
+        digitalWrite(outPin2, LOW);
+        digitalWrite(outPin3, LOW);
         digitalWrite(outPin4, LOW);
+        break;
     }
   }
 }
