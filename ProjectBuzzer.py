@@ -9,6 +9,7 @@ from configuration import *
 from tkinter import *
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
+from buttonLED_Control import controlButton
 #-------------------------------------------------------------------------
 #Button Mapping
 buttonOneMap = 'f2'
@@ -87,7 +88,10 @@ def resetRound():
     unlocked = True
     currentName = ""
     print("Reset!")
+    #Reset all LED
+    controlButton(arduino, "1", False)
     time.sleep(resetDelay)
+    #highlight selected player on scoreboard
     scoreConfig[currentPlayer].config(bg=backgroundColor)
 
 #Reset but players who pressed before cannot press again
@@ -355,6 +359,8 @@ def main():
         #Lock button
         unlocked = False
         winLoseLock = False
+        #Turn on specified button LED
+        controlButton(arduino, buttonNumb, True)
         #Set name selected from nameList, from arduino output
         currentName = nameList[int(buttonNumb)-1]
         #Set current player to press button
