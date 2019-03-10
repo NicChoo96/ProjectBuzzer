@@ -3,15 +3,29 @@ import sys
 import serial.tools.list_ports
 import time
 import keyboard
+from arduinoTools import findArduino, getButtonStatus
 from playsound import playsound
 from configuration import *
 from tkinter import *
+from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
+#-------------------------------------------------------------------------
+#Button Mapping
+buttonOneMap = 'f2'
+buttonTwoMap = 'f3'
+buttonThreeMap = 'f4'
+buttonFourMap = 'f5'
+buttonFiveMap = 'f6'
+buttonSixMap = 'f7'
+buttonSevenMap = 'f8'
+buttonEightMap = 'f9'
 
 
 #-------------------------------------------------------------------------
 
-#Global logic variables
+#Private logic variables
+fontSize = 30
+labelWidth = 4
 pressedButtonLogger = []
 listOfNum = ["1","2","3", "4", "5", "6", "7", "8"]
 scoreList = [0,0,0,0,0,0,0,0]
@@ -25,22 +39,11 @@ status= ""
 isBorder = True
 #Delay from reset
 resetDelay = 0.1
+winLoseLock = True
+
 #-------------------------------------------------------------------------
 #detect arduino in windows port
-ports = list(serial.tools.list_ports.comports())
-for p in ports:
-    print(p)
-    if "Arduino" in p[1]:
-        arduinoPort = p[0];
-    elif "USB-SERIAL CH340" in p[1]:
-        arduinoPort = p[0];
-#if arduino is found, link arduino serial to python
-if arduinoPort != "":
-    arduino = serial.Serial(arduinoPort, 9600, timeout=0)
-else:
-    print("Error 404, Arduino Not Found!")
-    sys.exit()
-
+arduino = findArduino()
 #-------------------------------------------------------------------------
 
 #Set names on display
@@ -154,6 +157,7 @@ def winFunc():
     
     #Add points and update scoreboard
     updateScoreBoard(1)
+    flashLabel(scoreConfig[currentPlayer], "green", True, 6, 150)
 
     #Display correct animation
     #resultPanel.configure(image=correctImage)
@@ -173,6 +177,8 @@ def loseFunc():
     
     #Deducts points and update scoreboard
     updateScoreBoard(-1)
+    flashLabel(scoreConfig[currentPlayer], "red", True, 4, 300)
+
 
     #Display Wrong Animation
     #resultPanel.configure(image=wrongImage)
@@ -189,39 +195,11 @@ def loseFunc():
     
 #Change win/lose button back to disabled
 def resetButtons():
+    global winLoseLock
     winButton['state'] = 'disabled'
     loseButton['state'] = 'disabled'
+    winLoseLock = True
 
-#-------------------------------------------------------------------------
-#Arduino Communication Functions
-
-#gets latest update from arduino
-def getLatestStatus(): 
-    global status
-    while arduino.inWaiting() > 0:
-        status = arduino.readline();
-    return status;
-
-#strip the raw data of their spaces
-def cleanData(inputData): 
-    if inputData == "": #bug patch between byte and str
-        return "";
-    else:
-        return inputData.strip().decode()
-
-#checks if the data has numbers in it from the input data
-def checkListNum(data):
-    for n in listOfNum:
-        if n in data:
-            return True;
-    return False;
-
-#extract out the numbers from the string
-def extractNum(data):
-    for n in listOfNum:
-        if n in data:
-            return n;
-    return "";
 #-------------------------------------------------------------------------
 #Quit program
 def quit():
@@ -246,11 +224,11 @@ def debugKeyInputs():
     global buttonNumb
     #Keyboard inputs for Reset and Quit
     try:
-        if keyboard.is_pressed('k'): #reset button pressed
+        if keyboard.is_pressed('k') and not winLoseLock: #reset button pressed
             winFunc()
         else:
             pass
-        if keyboard.is_pressed('l'): #reset button pressed
+        if keyboard.is_pressed('l') and not winLoseLock: #reset button pressed
             loseFunc()
         else:
             pass
@@ -267,35 +245,35 @@ def debugKeyInputs():
             quit()
         else:
             pass
-        if keyboard.is_pressed('z'): #reset button pressed
+        if keyboard.is_pressed(buttonOneMap): #reset button pressed
             buttonNumb = "1"
         else:
             pass
-        if keyboard.is_pressed('x'): #reset button pressed
+        if keyboard.is_pressed(buttonTwoMap): #reset button pressed
             buttonNumb = "2"
         else:
             pass
-        if keyboard.is_pressed('c'): #reset button pressed
+        if keyboard.is_pressed(buttonThreeMap): #reset button pressed
             buttonNumb = "3"
         else:
             pass
-        if keyboard.is_pressed('v'): #reset button pressed
+        if keyboard.is_pressed(buttonFourMap): #reset button pressed
             buttonNumb = "4"
         else:
             pass
-        if keyboard.is_pressed('b'): #reset button pressed
+        if keyboard.is_pressed(buttonFiveMap): #reset button pressed
             buttonNumb = "5"
         else:
             pass
-        if keyboard.is_pressed('n'): #reset button pressed
+        if keyboard.is_pressed(buttonSixMap): #reset button pressed
             buttonNumb = "6"
         else:
             pass
-        if keyboard.is_pressed('m'): #reset button pressed
+        if keyboard.is_pressed(buttonSevenMap): #reset button pressed
             buttonNumb = "7"
         else:
             pass
-        if keyboard.is_pressed(','): #reset button pressed
+        if keyboard.is_pressed(buttonEightMap): #reset button pressed
             buttonNumb = "8"
         else:
             pass
@@ -311,17 +289,17 @@ def checkButtonNotPressedBefore(buttonNumb):
 #-------------------------------------------------------------------------
 #Create Scoreboard
 def createScoreBoard():
-    global numberOfPlayers
-    global root
+    #global numberOfPlayers
+    #global root
     global scoreDisplay
-    global backgroundColor
-    global fontColor
+    #global backgroundColor
+    #global fontColor
     global scoreConfig
     for x in range(numberOfPlayers):
         display = StringVar()
         scoreDisplay.append(display)
         s_config = Label(root, textvariable=scoreDisplay[x],
-                      width=5, bg=backgroundColor, fg=fontColor, font=("Arial", 35))
+                      width=labelWidth, bg=backgroundColor, fg=fontColor, font=("Arial", fontSize))
         s_config.pack(side=LEFT)
         scoreConfig.append(s_config)
         scoreDisplay[x].set(str(x+1) + "\n" + str(scoreList[x]))
@@ -330,27 +308,43 @@ def updateScoreBoard(points):
     global currentPlayer
     global scoreList
     global scoreDisplay
-    global listOfNum
-    scoreList[currentPlayer] += points
-    scoreDisplay[currentPlayer].set(
+    if not (points < 0 and scoreList[currentPlayer] == 0):
+        scoreList[currentPlayer] += points
+        scoreDisplay[currentPlayer].set(
         str(listOfNum[currentPlayer]) + "\n" + str(scoreList[currentPlayer]))
+
+def flashLabel(flashingLabel, color, isSelected, times, delay):
+    if getLabelColor(flashingLabel) == backgroundColor:
+        setLabelColor(flashingLabel, color)
+    else:
+        setLabelColor(flashingLabel, backgroundColor)
+    times = times - 1
+    if times >= 0:
+        flashingLabel.after(delay, flashLabel, flashingLabel, color, isSelected, times, delay)
+    else:
+        if isSelected:
+            setLabelColor(flashingLabel, color)
+        else:
+            setLabelColor(flashingLabel, backgroundColor)
+
+#get set label color
+def getLabelColor(labelName):
+    return labelName.cget('bg')
+def setLabelColor(labelName, color):
+    labelName.config(bg=color)
     
 #-------------------------------------------------------------------------
 def main():
     global unlocked
-    global listOfNum
     global currentName
     global winButton
     global loseButton
-    global root
     global buttonNumb
     global pressedButtonLogger
-    global debugging
     global currentPlayer
-    global selectedColor
-    global scoreConfig
+    global winLoseLock
     #Assign values from arduino serial output
-    buttonNumb = extractNum(cleanData(getLatestStatus())) #Decode arduino output from \r\n'1'
+    buttonNumb = getButtonStatus(arduino) #Decode arduino output from \r\n'1'
     if debugging:
         debugKeyInputs()
     if buttonNumb != "" and unlocked and checkButtonNotPressedBefore(buttonNumb):
@@ -360,12 +354,13 @@ def main():
         playsound('sound/ButtonPressed.wav', False)
         #Lock button
         unlocked = False
+        winLoseLock = False
         #Set name selected from nameList, from arduino output
         currentName = nameList[int(buttonNumb)-1]
         #Set current player to press button
         currentPlayer = int(buttonNumb) - 1
         #Highlight the player who press the button
-        scoreConfig[currentPlayer].config(bg=selectedColor)
+        flashLabel(scoreConfig[currentPlayer], selectedColor, True, 5, 200)
         #Set display to name
         setText(currentName)
         #Enable win lose buttons
@@ -386,6 +381,9 @@ root["bg"] = backgroundColor
 createScoreBoard()
 root.title(displayTitle)
 root.geometry(displayWindowSize) #Size of window
+#ttk.Style().configure('TFrame', background=backgroundColor)
+#backgroundFrame = ttk.Frame(root)
+#backgroundFrame.pack(fill="both", expand=True)
 #Import all images
 correctImage = PhotoImage(file="image/Tick.png")
 correctImage = correctImage.zoom(imageSize)
