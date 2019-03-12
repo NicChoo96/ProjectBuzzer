@@ -89,7 +89,7 @@ def resetRound():
     currentName = ""
     print("Reset!")
     #Reset all LED
-    controlButton(arduino, "1", False)
+    #controlButton(arduino, "1", False)
     time.sleep(resetDelay)
     #highlight selected player on scoreboard
     scoreConfig[currentPlayer].config(bg=backgroundColor)
@@ -360,7 +360,7 @@ def main():
         unlocked = False
         winLoseLock = False
         #Turn on specified button LED
-        controlButton(arduino, buttonNumb, True)
+        #controlButton(arduino, buttonNumb, True)
         #Set name selected from nameList, from arduino output
         currentName = nameList[int(buttonNumb)-1]
         #Set current player to press button
