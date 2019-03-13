@@ -13,7 +13,7 @@ def saveState(playerScores, fileName):
 def loadState(fileName):
 	playerScores = []
 	if os.path.isfile('./'+fileName+'.txt'):
-		with open('data.txt') as json_file:
+		with open(fileName+'.txt') as json_file:
 		    data = json.load(json_file)
 		    for p in data['player']:
 		        playerScores.append(p)
