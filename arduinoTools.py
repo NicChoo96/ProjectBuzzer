@@ -1,9 +1,11 @@
 import serial.tools.list_ports
+import sys
 listOfNum = ["1","2","3", "4", "5", "6", "7", "8"]
 
 #list all ports and find arduino
 #return arduino linkage
 def findArduino():
+	arduinoPort = ""
 	ports = list(serial.tools.list_ports.comports())
 	for p in ports:
 		print(p)

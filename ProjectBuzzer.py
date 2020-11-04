@@ -50,6 +50,7 @@ if len(loadScore) > 0:
 #-------------------------------------------------------------------------
 #detect arduino in windows port
 arduino = findArduino()
+print(arduino)
 #-------------------------------------------------------------------------
 
 #Set names on display
