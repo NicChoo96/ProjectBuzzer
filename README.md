@@ -4,7 +4,9 @@ This is a hardware project where 8 buttons are setup with an Arduino to play a g
 
 ### Hardwares
 > 8 Big Dome Buttons from SparkFun
+
 > Wired Connectors from Arduino to the connectors
+
 > Self-Soldered Logic Boards
 
 ### Audience Display
